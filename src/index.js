@@ -1,57 +1,51 @@
-import Table from "./Table.js";
 
-function getData(url, cb) {
-  let xhr = new XMLHttpRequest();
-  xhr.onload = function () {
-    if (xhr.status === 200) {
-      return cb(JSON.parse(xhr.responseText));
+ const content = document.getElementById('data');
+ content.innerHTML = message('loading...');
+ const data = fetch('https://newsapi.org/v2/top-headlines?country=id&apiKey=4ddad75f151740bcbc45fc0243f1a0e2');
+ data
+   .then(function(res){ return res.json()})
+   .then(res => {
+      console.log(res)
+      content.innerHTML = render(res.articles)
+   })
+   .catch(err => {
+    content.innerHTML = message(err.message)
+   })
+   .finally(() => {    
+   });
+
+   function render(articles) {
+    let content = ``;
+    articles.forEach(articles => {
+      content += `<div class="card col-3 m-1>
+      <div class="card-body">
+        <h5 class="card-title">${articles.title}</h5>
+        <p class="card-subtitle mb-2 text-body-secondary">${articles.publishedAt}</p>
+        <a href=${articles.url} class="btn btn-primary">Read More</a>
+      </div>
+    </div>`;
+    })
+    return content;
+  } 
+  
+  function message(msg) {
+    return `<tr>
+              <td class="text-center" colspan="8">${msg}</td>
+          </tr>`;
+  }
+
+  function search() {
+    // Ambil input pencarian dari user
+    let input = document.getElementById("search").value;
+    // Ambil elemen list yang akan dicari
+    let list = document.getElementById("data").getElementsByTagName("h5");
+    // Lakukan pencarian dan tampilkan hasilnya
+    for (let i = 0; i < list.length; i++) {
+      let item = list[i].innerHTML;
+      if (item.toLowerCase().includes(input.toLowerCase())) {
+        list[i].style.display = "block";
+      } else {
+        list[i].style.display = "none";
+      }
     }
-  };
-  xhr.open("GET", url);
-  xhr.send();
-}
-
-const data = getData("https://jsonplaceholder.typicode.com/users", function(data){
-  return data;
-})
-console.log(data);
-
-var allDataArray = [];
-
-// Buat fungsi untuk mengonversi nilai properti pada objek JSON menjadi array
-function convertObjectToArray(obj) {
-    var dataArray = [];
-    for (var prop in obj) {
-        if (typeof obj[prop] === "object") {
-            for (var subProp in obj[prop]) {
-                dataArray.push(obj[prop][subProp]);
-            }
-        } else {
-            dataArray.push(obj[prop]);
-        }
-    }
-    return dataArray;
-}
-
-// Tambahkan setiap array yang dihasilkan ke dalam array allDataArray
-allDataArray.push(convertObjectToArray(data));
-
-console.log(allDataArray)
-
-const app = document.getElementById("app");
-const table = new Table({
-  columns: ["ID", "Name", "Username", "Email", "Address", "Company"],
-  showData: [
-    ["iPhone 9", "An apple mobile which is nothing like apple"],
-    [
-      "iPhone X",
-      "SIM-Free, Model A19211 6.5-inch Super Retina HD display with OLED technology A12 Bionic chip",
-    ],
-    [
-      "Huawei P30",
-      "Huawei's re-badged P30 Pro New Edition was officially unveiled yesterday in Germany and now the device has made its way to the UK",
-    ],
-  ],
-});
-
-table.render(app);
+  }

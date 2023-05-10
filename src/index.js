@@ -17,7 +17,7 @@
    function render(articles) {
     let content = ``;
     articles.forEach(articles => {
-      content += `<div class="card col-3 m-1>
+      content += `<div class="card col-3 m-1">
       <div class="card-body">
         <h5 class="card-title">${articles.title}</h5>
         <p class="card-subtitle mb-2 text-body-secondary">${articles.publishedAt}</p>
@@ -34,18 +34,26 @@
           </tr>`;
   }
 
+  document.getElementById('search').addEventListener('input', function(event) {
+    search();
+  });
+  
   function search() {
-    // Ambil input pencarian dari user
-    let input = document.getElementById("search").value;
-    // Ambil elemen list yang akan dicari
-    let list = document.getElementById("data").getElementsByTagName("h5");
-    // Lakukan pencarian dan tampilkan hasilnya
-    for (let i = 0; i < list.length; i++) {
-      let item = list[i].innerHTML;
-      if (item.toLowerCase().includes(input.toLowerCase())) {
-        list[i].style.display = "block";
+    // Get the search query from the input field
+    let searchQuery = document.getElementById('search').value.toLowerCase();
+    
+    // Get the list of articles
+    let articlesList = document.getElementById('data').querySelectorAll('.card');
+    
+    // Loop through each article and check if it contains the search query
+    articlesList.forEach(function(article) {
+      let articleTitle = article.querySelector('.card-title').textContent.toLowerCase();
+      if (articleTitle.includes(searchQuery)) {
+        article.style.display = 'block'; // show the article card
       } else {
-        list[i].style.display = "none";
+        article.style.display = 'none'; // hide the article card
       }
-    }
+    });
+    
   }
+  
